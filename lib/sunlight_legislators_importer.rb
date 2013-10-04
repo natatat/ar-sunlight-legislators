@@ -1,14 +1,18 @@
 require 'csv'
+require_relative '../app/models/legislator'
 
 class SunlightLegislatorsImporter
   def self.import(filename)
     csv = CSV.new(File.open(filename), :headers => true)
+    fields_used = %w(title first_name middle_name last_name state
+                party phone fax website webform gender
+                birthdate twitter_id in_office)
     csv.each do |row|
+      fields_hash = {}
       row.each do |field, value|
-        # TODO: begin
-        raise NotImplementedError, "TODO: figure out what to do with this row and do it!"
-        # TODO: end
+        fields_hash[field] = value if fields_used.include?(field)
       end
+      Legislator.create!(fields_hash)
     end
   end
 end
@@ -23,3 +27,5 @@ end
 # rescue NotImplementedError => e
 #   $stderr.puts "You shouldn't be running this until you've modified it with your implementation!"
 # end
+
+SunlightLegislatorsImporter.import('../db/data/legislators.csv')
